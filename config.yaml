@@ -1,5 +1,5 @@
 # workdir must have a directory named "alignments" with each multiple-sequence alignments in a seperate fasta file.
-workdir: "datasmall"
+workdir: "/data/genome/run/snyoo/00_Projects/TM_microbiome_script/phylogenetic_pipeline/Agaricales/out/refine/"
 # options are ["nuc", "prot"]
 chartype: "nuc"
 
@@ -8,36 +8,36 @@ chartype: "nuc"
 # "tree": workdir/backbone.nwk is used as the backbone. Therefore genetreeinfer&refine_bb will be skipped
 # "list": workdir/species.txt is used as the list of backbone species. therefore mainlines will be skipped. However,
 # genetreeinfer&refine will still run to get a backbone tree.
-backbone: "de-novo"
+backbone: "tree"
 
 resources:
   # MBs
-  large_memory: 16000
+  large_memory: 160000
   # cores used in monolithic tasks such as decompose and prep_backbone_alignments
-  cores: 4
+  cores: 32
 
-trim_config:
-  # sites with less non-gap fraction than below will be removed
-  percent_nongap: 0.05
+#trim_config:
+#  # sites with less non-gap fraction than below will be removed
+#  percent_nongap: 0
 
-mainlines_config:
-  # target number of taxa
-  n: 100
-  # concatenation alignment length
-  length: 5000
+#mainlines_config:
+#  # target number of taxa
+#  n: 100
+#  # concatenation alignment length
+#  length: 5000
 
 # backbone filtering is recommended if backbone contains misplaced or noisy sequences
-backbone_filtering: False
+#backbone_filtering: True
 
-apples_config:
-  # [FM, OLS]
-  method: FM
-  # float. [0-infinity)
-  filter: 0.2
-  # integer. [5-infinity)
-  base: 25
-  # minimum overlap fraction. Default  is 0.001
-  overlap: 0.05
+#apples_config:
+#  # [FM, OLS]
+#  method: FM
+#  # float. [0-infinity)
+#  filter: 0.2
+#  # integer. [5-infinity)
+#  base: 25
+#  # minimum overlap fraction. Default  is 0.001
+#  overlap: 0.05
 
 prep_config:
   # cluster must have a minimum diameter
@@ -46,41 +46,37 @@ prep_config:
   # if "auto", uDance determines the size using standard formula
   # Min[Round[8 Sqrt[n] + 3 Sqrt[m], 100], 2500]
   # otherwise, this number can be any integer.
-  cluster_size: "auto"
-  #cluster_size: 50
+  #cluster_size: "auto"
+  cluster_size: 500
   # minimum subtree alignment length
-  sublength: 100
+  sublength: 300
   # minimum fragment length
-  fraglength: 75
+  fraglength: 150
   # large clusters are pruned. ASTRAL's limit is around 9000 for 400+ genes.
   pruneafter: 9000
   # experimental. when number of queries landed on a partition are less than or equal to this number
   # the partition will be skipped to save running time
   min_placements: 0
 
-
 infer_config:
   # [raxml-ng,iqtree,raxml-8]
-  method: "raxml-8"
+  method: "raxml-ng"
   # number of starting trees
-  numstart: 2
+  numstart: 3
   # number of starting tree instances that run concurrently
   # this number should not exceeed "numstart"
   numthread: 1
 
 refine_config:
   # contract low support branches threshold. 0.9 for iqtree -abayes
-  contract: 0.33
+  contract: 0
   # gene occupancy threshold for inclusion
-  occupancy: 2
+  occupancy: 0
   # 1D k-means-based (k=2) outlier gene detection parameter. Limit for outlier size fraction.
   # Larger clusters cannot be designated as outliers
-  outlier_sizelimit: 0.2  
+  outlier_sizelimit: 0
   # 1D k-means-based (k=2) outlier gene detection parameter. Centroid difference must be 
   # larger than this value to designate the first cluster as outliers.
-  outlier_difference: 0.1
+  outlier_difference: 1.0
   # Experimental. Infer branch lengths in substitution unit using ASTRAL. [True, False]
   infer_branchlen: True
-
-
-
